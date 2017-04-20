@@ -33,3 +33,17 @@ Most CMS have still not arrived in the current age of SPAs and API based develop
 
 
 
+### Roadmap
+
+* [x] i18n
+* [x] Registration
+* [ ] Login
+* [ ] Authentication
+* [ ] Access tokens
+* [ ] OAuth
+* [ ] User Profile
+* [ ] Site config
+* [ ] Site permissions
+* [ ] Routing
+* [ ] Template Rendering
+* [ ] Asset Handling
