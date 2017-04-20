@@ -1,6 +1,7 @@
 package db
 
 import (
+	"github.com/ElectricCookie/das-cms/configLoader"
 	"gopkg.in/mgo.v2"
 )
 
@@ -11,7 +12,7 @@ func Connect() {
 
 	var err error
 
-	session, err = mgo.Dial("localhost")
+	session, err = mgo.Dial(configLoader.GetConfig().DBHost)
 
 	if err != nil {
 		panic(err)

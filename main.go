@@ -7,6 +7,7 @@ import "github.com/ElectricCookie/das-cms/routes"
 import "github.com/ElectricCookie/das-cms/db"
 import "github.com/ElectricCookie/das-cms/i18n"
 import "github.com/derekparker/delve/pkg/config"
+import "github.com/ElectricCookie/das-cms/configLoader"
 
 func main() {
 	config.LoadConfig()
@@ -14,6 +15,7 @@ func main() {
 	db.Connect()
 	routes.CreateRouter()
 	user.RegisterNamespace()
-	routes.Router.Run("localhost:8080")
+
+	routes.Router.Run(configLoader.GetConfig().Interface)
 
 }

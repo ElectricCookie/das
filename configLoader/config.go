@@ -16,6 +16,8 @@ type Configuration struct {
 	SMTPPassword string `json:"smtpPassword" validate:"required"`
 	SMTPFrom     string `json:"stmpFrom" validate:"required,email"`
 	JWTSecret    string `json:"jwtSecret" validate:"required"`
+	Interface    string `json:"interface" validate:"required,url"`
+	DBHost       string `json:"dbHost" validate:"required,url"`
 }
 
 var config Configuration
