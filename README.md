@@ -1,4 +1,4 @@
-<h1 align="center">das CMS</h1>
+<h1 align="center"><img src="http://i.imgur.com/cq4z9wA.png" height="50" /></h1>
 
 DAS-CMS is a highly customizable and fast CMS for professionals written in Go with a React-based front-end. 
 
