@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/ElectricCookie/das-cms/configLoader"
+	"github.com/ElectricCookie/das-cms/db"
 	"github.com/ElectricCookie/das-cms/i18n"
 	gomail "gopkg.in/gomail.v2"
 )
@@ -33,7 +34,7 @@ func sendEmail(targetEmail string, subject, content string) *error {
 }
 
 // SendRegistrationEmail sends a registration email, with confirmation link
-func SendRegistrationEmail(user User) *error {
+func SendRegistrationEmail(user db.User) *error {
 
 	if user.EmailVerified {
 		return nil

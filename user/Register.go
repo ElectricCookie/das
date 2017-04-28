@@ -5,8 +5,6 @@ import (
 
 	"golang.org/x/crypto/scrypt"
 
-	"gopkg.in/mgo.v2/bson"
-
 	"time"
 
 	"fmt"
@@ -54,11 +52,7 @@ func registerHandler(c *gin.Context) {
 // Register a new user account
 func Register(params RegisterData) *routes.APIError {
 
-	user := User{}
-
-	err := db.GetDb().C("users").Find(bson.M{
-		"username": params.Username,
-	}).One(&user)
+	_, err := db.GetDb().GetUserByUsername(params.Username)
 
 	if err == nil {
 		fmt.Println(err)
@@ -68,9 +62,7 @@ func Register(params RegisterData) *routes.APIError {
 		}
 	}
 
-	err = db.GetDb().C("users").Find(bson.M{
-		"email": params.Email,
-	}).One(&user)
+	_, err = db.GetDb().GetUserByEmail(params.Email)
 
 	if err == nil {
 		return &routes.APIError{
@@ -101,7 +93,7 @@ func Register(params RegisterData) *routes.APIError {
 
 	// Ready to insert
 
-	newUser := User{
+	newUser := db.User{
 		Username:         params.Username,
 		Email:            params.Email,
 		FirstName:        params.FirstName,
@@ -115,7 +107,7 @@ func Register(params RegisterData) *routes.APIError {
 		Registered:       time.Now().Unix(),
 	}
 
-	db.GetDb().C("users").Insert(newUser)
+	db.GetDb().CreateUser(&newUser)
 
 	if err := SendRegistrationEmail(newUser); err != nil {
 		fmt.Println(err)

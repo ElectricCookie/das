@@ -7,6 +7,13 @@ import (
 
 var session *mgo.Session
 
+var connector Connector
+
+// SetConnector sets the db connector to be used
+func SetConnector(newConnector Connector) {
+	connector = newConnector
+}
+
 // Connect connects to the database server
 func Connect() {
 
@@ -20,14 +27,24 @@ func Connect() {
 
 }
 
-// Disconnect from the current session
-func Disconnect() {
-	if session != nil {
-		session.Close()
-	}
+// GetDb returns the current db session
+func GetDb() Connector {
+	return connector
 }
 
-// GetDb returns the current db session
-func GetDb() *mgo.Database {
-	return session.DB("das")
+// Connector is the interface of all methods a db connector needs to implement
+type Connector interface {
+	GetUserByEmail(email string) (*User, error)
+	GetUserByUsername(username string) (*User, error)
+	GetUserById(id string) (*User, error)
+
+	GetUserByUsernameOrEmail(input string) (*User, error)
+
+	CreateUser(*User) error
+
+	VerifyEmail(*User) error
+
+	InsertRefreshToken(token *RefreshToken) error
+
+	FindRefreshToken(id string, token string) (*RefreshToken, error)
 }

@@ -9,13 +9,6 @@ import (
 	"golang.org/x/crypto/scrypt"
 )
 
-// RefreshToken is a token that can be used to gain access to an access_token
-type RefreshToken struct {
-	Expires int64  `json:"expires" bson:"expires,omitempty"`
-	Token   string `json:"token" bson:"token"`
-	UserID  string `json:"userId" bson:"userId"`
-}
-
 // GenerateRefreshToken generates a new refresh-token and saves it in the database
 func GenerateRefreshToken(userID string) (*string, error) {
 
@@ -26,7 +19,7 @@ func GenerateRefreshToken(userID string) (*string, error) {
 		return nil, err
 	}
 
-	user, userErr := GetUserByID(userID)
+	user, userErr := db.GetDb().GetUserById(userID)
 
 	if userErr != nil {
 		return nil, userErr
@@ -40,7 +33,7 @@ func GenerateRefreshToken(userID string) (*string, error) {
 		return nil, cryptError
 	}
 
-	db.GetDb().C("refreshTokens").Insert(RefreshToken{
+	db.GetDb().InsertRefreshToken(&db.RefreshToken{
 		Token:  string(dk),
 		UserID: userID,
 	})
@@ -66,7 +59,7 @@ func GenerateRefreshToken(userID string) (*string, error) {
 func CheckRefreshToken(jwtToken string) (*jwt.StandardClaims, error) {
 
 	claims := jwt.StandardClaims{}
-	token, parseError := jwt.ParseWithClaims(jwtToken, &claims, func(token *jwt.Token) (interface{}, error) {
+	_, parseError := jwt.ParseWithClaims(jwtToken, &claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte(configLoader.GetConfig().JWTSecret), nil
 	})
 
@@ -77,7 +70,7 @@ func CheckRefreshToken(jwtToken string) (*jwt.StandardClaims, error) {
 		return nil, parseError
 	}
 
-	user, userErr := GetUserByID(userID)
+	user, userErr := db.GetDb().GetUserById(userID)
 
 	if userErr != nil {
 		return nil, userErr
@@ -91,10 +84,7 @@ func CheckRefreshToken(jwtToken string) (*jwt.StandardClaims, error) {
 		return nil, cryptError
 	}
 
-	retrieveError := db.GetDb().C("refreshTokens").Find(RefreshToken{
-		UserID: userID,
-		Token:  string(dk),
-	}).One(token)
+	_, retrieveError := db.GetDb().FindRefreshToken(userID, string(dk))
 
 	if retrieveError != nil {
 		return nil, retrieveError

@@ -7,7 +7,6 @@ import (
 	"github.com/ElectricCookie/das-cms/routes"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/scrypt"
-	"gopkg.in/mgo.v2/bson"
 )
 
 // LoginData is the required information for logging in
@@ -47,14 +46,7 @@ func loginHandler(c *gin.Context) {
 // Login a user
 func Login(usernameOrEmail string, password string) (*string, *routes.APIError) {
 
-	usernameQuery := bson.M{"username": usernameOrEmail}
-	emailQuery := bson.M{"email": usernameOrEmail}
-
-	user := User{}
-
-	err := db.GetDb().C("users").Find(bson.M{
-		"$or": []bson.M{usernameQuery, emailQuery},
-	}).One(&user)
+	user, err := db.GetDb().GetUserByUsernameOrEmail(usernameOrEmail)
 
 	if err != nil {
 		return nil, &routes.APIError{
